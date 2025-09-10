@@ -644,13 +644,6 @@
                                     <p class="service-text">Lacak progress penanganan laporan Anda secara transparan</p>
                                 </div>
                             </div>
-                            <div class="carousel-item">
-                                <div class="service-card">
-                                    <i class="bi bi-shield-check service-icon"></i>
-                                    <h3 class="service-title">Terjamin Keamanannya</h3>
-                                    <p class="service-text">Data pribadi dan laporan Anda dilindungi dengan enkripsi modern</p>
-                                </div>
-                            </div>
                         </div>
                         
                         <!-- Carousel Indicators -->
@@ -689,11 +682,12 @@
     </section>
 
     <!-- Features Section -->
-    <section id="layanan" class="py-5">
+    <section id="layanan" class="py-5 bg-light">
         <div class="container">
+            <!-- Section Header -->
             <div class="row justify-content-center mb-5">
                 <div class="col-lg-8 text-center">
-                    <h2 class="display-5 fw-bold font-primary mb-4 animate-on-scroll">
+                    <h2 class="display-5 fw-bold font-primary mb-4 animate-on-scroll text-gradient">
                         Mengapa Memilih Platform Kami?
                     </h2>
                     <p class="lead text-muted animate-on-scroll delay-1">
@@ -702,18 +696,12 @@
                 </div>
             </div>
             
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6">
-                    <div class="feature-card hover-float animate-on-scroll">
-                        <div class="feature-icon primary">
-                            <i class="bi bi-shield-check"></i>
-                        </div>
-                    </div>
-                </div>
-                
+            <!-- Feature Cards -->
+            <div class="row g-4 justify-content-center">
+                <!-- Feature 1 -->
                 <div class="col-lg-3 col-md-6">
                     <div class="feature-card hover-float animate-on-scroll delay-1">
-                        <div class="feature-icon secondary">
+                        <div class="feature-icon primary">
                             <i class="bi bi-lightning-charge"></i>
                         </div>
                         <h5 class="feature-title">Respons Kilat</h5>
@@ -723,9 +711,10 @@
                     </div>
                 </div>
                 
+                <!-- Feature 2 -->
                 <div class="col-lg-3 col-md-6">
                     <div class="feature-card hover-float animate-on-scroll delay-2">
-                        <div class="feature-icon tertiary">
+                        <div class="feature-icon secondary">
                             <i class="bi bi-graph-up-arrow"></i>
                         </div>
                         <h5 class="feature-title">Tracking Transparan</h5>
@@ -735,9 +724,10 @@
                     </div>
                 </div>
                 
+                <!-- Feature 3 -->
                 <div class="col-lg-3 col-md-6">
                     <div class="feature-card hover-float animate-on-scroll delay-3">
-                        <div class="feature-icon success">
+                        <div class="feature-icon tertiary">
                             <i class="bi bi-people-fill"></i>
                         </div>
                         <h5 class="feature-title">Komunitas Aktif</h5>
@@ -755,36 +745,13 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h5>Kontak Kami</h5>
-                    <p><i class="bi bi-geo-alt-fill me-2"></i>Jl. Kelurahan Digital No. 123, Jakarta</p>
-                    <p><i class="bi bi-telephone-fill me-2"></i>+62 21 1234-5678</p>
-                    <p><i class="bi bi-envelope-fill me-2"></i>info@pengaduandigital.id</p>
+                    <h5>Alamat Kami</h5>
+                    <p><i class="bi bi-geo-alt-fill me-2"></i>Jl. Pd. Jaya, Pd. Jaya, Kec. Pd. Aren, Kota Tangerang Selatan, Banten 15224</p>
                 </div>
-                
-                <div class="footer-section">
-                    <h5>Layanan</h5>
-                    <p><a href="#">Pengaduan Online</a></p>
-                    <p><a href="#">Tracking Status</a></p>
-                    <p><a href="#">FAQ & Bantuan</a></p>
-                </div>
-                
-                <div class="footer-section">
-                    <h5>Tentang Kami</h5>
-                    <p><a href="#">Visi & Misi</a></p>
-                    <p><a href="#">Tim Kami</a></p>
-                    <p><a href="#">Karir</a></p>
-                </div>
-                
                 <div class="footer-section">
                     <h5>Ikuti Kami</h5>
                     <p>
-                        <a href="#" class="text-reset me-3">
-                            <i class="bi bi-facebook"></i>
-                        </a>
-                        <a href="#" class="text-reset me-3">
-                            <i class="bi bi-twitter"></i>
-                        </a>
-                        <a href="#" class="text-reset">
+                        <a href="https://www.instagram.com/pondok.jaya?utm_source=ig_web_button_share_sheet&igsh=MThld3VmZzFnOWRiNA==" class="text-reset">
                             <i class="bi bi-instagram"></i>
                         </a>
                     </p>
@@ -792,7 +759,7 @@
             </div>
             
             <div class="footer-bottom">
-                &copy; 2023 Pengaduan Digital. All Rights Reserved.
+                &copy; 2025 Pengaduan Digital. All Rights Reserved.
             </div>
         </div>
     </footer>
@@ -817,7 +784,7 @@
             });
         });
 
-        // Update navbar styles on scroll
+
         window.addEventListener('scroll', () => {
             const navbar = document.getElementById('navbar');
             if (window.scrollY > 50) {
@@ -827,15 +794,13 @@
             }
         });
 
-        // Count up animation for stats
+
         document.addEventListener('DOMContentLoaded', () => {
             const statNumbers = document.querySelectorAll('.stat-number');
             statNumbers.forEach(stat => {
                 const updateCount = () => {
                     const target = +stat.getAttribute('data-target');
                     const count = +stat.innerText;
-
-                    // Calculate increment based on target value
                     const increment = Math.ceil(target / 200);
 
                     if (count < target) {
@@ -850,7 +815,6 @@
             });
         });
 
-        // Back to top button functionality
         const backToTopBtn = document.querySelector('.back-to-top');
         backToTopBtn.addEventListener('click', (e) => {
             e.preventDefault();

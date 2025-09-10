@@ -97,11 +97,22 @@ session_start();
                         </div>
                     <?php endif; ?>
                     
+                    <?php if(isset($_SESSION['success'])): ?>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <?php 
+                            echo $_SESSION['success'];
+                            unset($_SESSION['success']);
+                            ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    <?php endif; ?>
+                    
                     <form action="config/aksi_login.php" method="POST">
                         <div class="mb-3">
                             <label class="form-label" for="username">Username</label>
                             <input type="text" class="form-control" name="username" id="username" 
-                                   placeholder="Masukan Username" required autofocus autocomplete="off">
+                                   placeholder="Masukan Username" required autofocus autocomplete="off"
+                                   value="<?php echo isset($_SESSION['old_username']) ? $_SESSION['old_username'] : ''; ?>">
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="password">Password</label>
@@ -110,9 +121,9 @@ session_start();
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="level">Login Sebagai</label>
-                            <select class="form-control" name="level" id="level">
-                                <option value="masyarakat">Masyarakat</option>
-                                <option value="petugas">Petugas</option>
+                            <select class="form-control" name="level" id="level" required>
+                                <option value="masyarakat" <?php echo (isset($_SESSION['old_level']) && $_SESSION['old_level'] == 'masyarakat') ? 'selected' : ''; ?>>Masyarakat</option>
+                                <option value="petugas" <?php echo (isset($_SESSION['old_level']) && $_SESSION['old_level'] == 'petugas') ? 'selected' : ''; ?>>Petugas</option>
                             </select>
                         </div>
                         <div class="d-grid">
@@ -140,3 +151,13 @@ session_start();
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+<?php
+// Hapus session old data setelah digunakan
+if (isset($_SESSION['old_username'])) {
+    unset($_SESSION['old_username']);
+}
+if (isset($_SESSION['old_level'])) {
+    unset($_SESSION['old_level']);
+}
+?>
