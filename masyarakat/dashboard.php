@@ -69,6 +69,11 @@ try {
             color: white;
         }
         
+        .sidebar .nav-link.logout-link:hover {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #fff;
+        }
+        
         .card {
             border-radius: 15px;
             border: none;
@@ -121,6 +126,21 @@ try {
         .badge-selesai {
             background-color: var(--success);
         }
+        
+        /* Logout confirmation modal */
+        .modal-content {
+            border-radius: 15px;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            border-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c96961;
+            border-color: #c96961;
+        }
     </style>
 </head>
 <body>
@@ -131,7 +151,7 @@ try {
                 <div class="position-sticky pt-3">
                     <div class="text-center mb-4">
                         <h5 class="text-white">Dashboard Masyarakat</h5>
-                        <p class="text-white-50 mb-0">Selamat datang, <?php echo $_SESSION['nama']; ?></p>
+                        <p class="text-white-50 mb-0">Selamat datang, <?php echo htmlspecialchars($_SESSION['nama']); ?></p>
                     </div>
                     
                     <ul class="nav flex-column">
@@ -156,7 +176,7 @@ try {
                             </a>
                         </li>
                         <li class="nav-item mt-3">
-                            <a class="nav-link text-warning" href="../config/logout.php">
+                            <a class="nav-link text-warning logout-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
                                 <i class="bi bi-box-arrow-right"></i> Logout
                             </a>
                         </li>
@@ -324,6 +344,59 @@ try {
         </div>
     </div>
     
+    <!-- Logout Confirmation Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Konfirmasi Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <i class="bi bi-question-circle-fill text-warning" style="font-size: 3rem;"></i>
+                        <h6 class="mt-3">Apakah Anda yakin ingin keluar?</h6>
+                        <p class="text-muted">Anda akan diarahkan kembali ke halaman utama.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <a href="../config/logout.php" class="btn btn-danger">
+                        <i class="bi bi-box-arrow-right"></i> Ya, Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                if (alert) {
+                    alert.style.transition = 'opacity 0.5s';
+                    alert.style.opacity = '0';
+                    setTimeout(function() {
+                        alert.remove();
+                    }, 500);
+                }
+            });
+        }, 5000);
+        
+        // Confirm logout when clicking logout link
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutLinks = document.querySelectorAll('a[href="../config/logout.php"]');
+            logoutLinks.forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    if (!confirm('Apakah Anda yakin ingin keluar?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
