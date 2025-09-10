@@ -708,10 +708,6 @@
                         <div class="feature-icon primary">
                             <i class="bi bi-shield-check"></i>
                         </div>
-                        <h5 class="feature-title">Keamanan Terjamin</h5>
-                        <p class="feature-text">
-                            Data pengaduan dilindungi dengan enkripsi end-to-end dan sistem keamanan berlapis
-                        </p>
                     </div>
                 </div>
                 
