@@ -1,5 +1,4 @@
 <?php
-// config/aksi_login.php
 session_start();
 require_once 'koneksi.php';
 
@@ -69,7 +68,7 @@ if (isset($_POST['kirim'])) {
                     $_SESSION['user_id'] = $user['id_petugas'];
                     $_SESSION['nama'] = $user['nama_petugas'];
                     $_SESSION['username'] = $user['username'];
-                    $_SESSION['level'] = $user['level']; // 'admin'
+                    $_SESSION['level'] = $user['level']; // 'admin' atau 'petugas'
                     $_SESSION['login'] = true;
                     
                     // Redirect berdasarkan level
