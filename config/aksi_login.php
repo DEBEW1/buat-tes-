@@ -42,7 +42,7 @@ if (isset($_POST['kirim'])) {
                     $_SESSION['nama'] = $user['nama'];
                     $_SESSION['username'] = $user['username'];
                     $_SESSION['level'] = 'masyarakat';
-                    $_SESSION['login'] = true;
+                    $_SESSION['login'] = 'masyarakat'; // Perbaikan: konsisten dengan admin/index.php
                     
                     // Redirect ke dashboard masyarakat
                     header('Location: ../masyarakat/dashboard.php');
@@ -69,13 +69,13 @@ if (isset($_POST['kirim'])) {
                     $_SESSION['nama'] = $user['nama_petugas'];
                     $_SESSION['username'] = $user['username'];
                     $_SESSION['level'] = $user['level']; // 'admin' atau 'petugas'
-                    $_SESSION['login'] = true;
+                    $_SESSION['login'] = $user['level']; // Perbaikan: set sesuai level (admin/petugas)
                     
                     // Redirect berdasarkan level
-                    if ($user['level'] == 'admin') {
+                    if ($user['level'] == 'admin' || $user['level'] == 'petugas') {
                         header('Location: ../admin/index.php');
+                        exit(); // Perbaikan: tambah exit setelah admin redirect
                     }
-                    exit();
                 } else {
                     $_SESSION['error'] = "Username atau password salah";
                 }
