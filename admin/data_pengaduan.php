@@ -192,13 +192,35 @@ if (isset($_POST["kirim"])) {
 // Simpan tanggapan
 if (isset($_POST["tanggapi"])) {
     $id_pengaduan = intval($_POST["id_pengaduan"]);
-    $id_petugas   = $_SESSION['id_petugas'];
-    $tanggal      = date("Y-m-d");
-    $tanggapan    = mysqli_real_escape_string($conn, $_POST["tanggapan"]);
 
-    $query = mysqli_query($conn, "INSERT INTO tanggapan VALUES ('','$id_pengaduan','$tanggal','$tanggapan','$id_petugas')");
-    echo "<script>alert('Tanggapan berhasil disimpan'); document.location.href='index.php?page=pengaduan';</script>";
+    // Pastikan session id_petugas ada
+    if (!isset($_SESSION['id_petugas'])) {
+        die("Error: Petugas belum login.");
+    }
+
+    $id_petugas = $_SESSION['id_petugas'];
+    $tanggal    = date("Y-m-d H:i:s"); // timestamp lengkap
+    $tanggapan  = mysqli_real_escape_string($conn, $_POST["tanggapan"]);
+
+    // Insert tanggapan
+    $query = "INSERT INTO tanggapan (id_pengaduan, tgl_tanggapan, tanggapan, id_petugas)
+              VALUES ('$id_pengaduan', '$tanggal', '$tanggapan', '$id_petugas')";
+
+    if (!mysqli_query($conn, $query)) {
+        die("Error insert tanggapan: " . mysqli_error($conn));
+    }
+
+    // Update status otomatis ke 'proses'
+    mysqli_query($conn, "UPDATE pengaduan SET status='proses' WHERE id_pengaduan='$id_pengaduan'");
+
+    echo "<script>
+            alert('Tanggapan berhasil disimpan'); 
+            document.location.href='index.php?page=pengaduan';
+          </script>";
 }
+
+
+
 
 // Tandai selesai
 if (isset($_POST["selesaikan"])) {

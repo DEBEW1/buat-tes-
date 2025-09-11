@@ -36,6 +36,15 @@ if (!isset($_SESSION['login']) || $_SESSION['level'] != 'masyarakat') {
             min-height: 100vh;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            z-index: 1000;
+            left: -300px;
+            width: 300px;
+            transition: left 0.3s ease;
+        }
+        
+        .sidebar.show {
+            left: 0;
         }
         
         .sidebar .nav-link {
@@ -49,6 +58,21 @@ if (!isset($_SESSION['login']) || $_SESSION['level'] != 'masyarakat') {
         .sidebar .nav-link.active {
             background-color: rgba(255,255,255,0.2);
             color: white;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        
+        .overlay.show {
+            display: block;
         }
         
         .card {
@@ -116,17 +140,138 @@ if (!isset($_SESSION['login']) || $_SESSION['level'] != 'masyarakat') {
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
+        
+        .mobile-header {
+            display: none;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 15px;
+            color: white;
+        }
+        
+        @media (max-width: 991.98px) {
+            .mobile-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .sidebar {
+                left: -300px;
+                top: 0;
+            }
+            
+            .sidebar.show {
+                left: 0;
+            }
+            
+            main {
+                margin-top: 70px;
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+            }
+            
+            .btn-toolbar {
+                flex-wrap: nowrap;
+            }
+            
+            .btn-toolbar .btn {
+                white-space: nowrap;
+                font-size: 0.875rem;
+                padding: 8px 12px;
+            }
+            
+            .d-flex.gap-3 {
+                flex-direction: column;
+                gap: 15px !important;
+            }
+            
+            .d-flex.gap-3 .btn {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+        
+        @media (max-width: 767.98px) {
+            .row .col-md-6 {
+                margin-bottom: 15px;
+            }
+            
+            .file-upload {
+                padding: 20px 15px;
+            }
+            
+            .preview-image {
+                max-width: 150px;
+                max-height: 150px;
+            }
+            
+            .bg-light.p-3.rounded.mb-4 {
+                padding: 15px !important;
+            }
+            
+            .card-body {
+                padding: 20px 15px;
+            }
+            
+            h1.h2 {
+                font-size: 1.75rem;
+            }
+        }
+        
+        @media (max-width: 575.98px) {
+            .btn-toolbar {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .d-flex.justify-content-between {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .form-control, .form-select {
+                padding: 10px 12px;
+            }
+            
+            .file-upload {
+                padding: 15px 10px;
+            }
+            
+            .file-upload p {
+                font-size: 0.9rem;
+            }
+            
+            .file-upload small {
+                font-size: 0.8rem;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <h5 class="mb-0">Buat Pengaduan</h5>
+        <button class="btn btn-outline-light btn-sm" id="sidebarToggle">
+            <i class="bi bi-list"></i>
+        </button>
+    </div>
+    
+    <!-- Overlay for mobile sidebar -->
+    <div class="overlay" id="overlay"></div>
+    
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar" id="sidebar">
                 <div class="position-sticky pt-3">
-                    <div class="text-center mb-4">
+                    <div class="text-center mb-4 d-none d-md-block">
                         <h5 class="text-white">Dashboard Masyarakat</h5>
                         <p class="text-white-50 mb-0">Selamat datang, <?php echo $_SESSION['nama']; ?></p>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end p-3 d-md-none">
+                        <button class="btn btn-close btn-close-white" id="closeSidebar"></button>
                     </div>
                     
                     <ul class="nav flex-column">
@@ -161,7 +306,7 @@ if (!isset($_SESSION['login']) || $_SESSION['level'] != 'masyarakat') {
             
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <div class="d-none d-md-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Buat Pengaduan Baru</h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <a href="riwayat.php" class="btn btn-outline-secondary">
@@ -301,6 +446,21 @@ if (!isset($_SESSION['login']) || $_SESSION['level'] != 'masyarakat') {
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Mobile sidebar toggle
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+        
+        function toggleSidebar() {
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        }
+        
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        closeSidebar.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+        
         // Character counter
         const isiLaporan = document.getElementById('isi_laporan');
         const charCount = document.getElementById('charCount');
@@ -414,6 +574,21 @@ if (!isset($_SESSION['login']) || $_SESSION['level'] != 'masyarakat') {
                 return false;
             }
         });
+        
+        // Adjust textarea rows on mobile
+        function adjustTextareaRows() {
+            if (window.innerWidth < 768) {
+                isiLaporan.setAttribute('rows', '6');
+            } else {
+                isiLaporan.setAttribute('rows', '8');
+            }
+        }
+        
+        // Initial adjustment
+        adjustTextareaRows();
+        
+        // Adjust on resize
+        window.addEventListener('resize', adjustTextareaRows);
     </script>
 </body>
 </html>
