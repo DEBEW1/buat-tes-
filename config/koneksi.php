@@ -39,6 +39,17 @@ class Database {
         }
     }
     
+    // Method untuk mendapatkan jumlah row dari query
+    public function count($sql, $params = []) {
+        try {
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->rowCount();
+        } catch (PDOException $e) {
+            throw new Exception("Count error: " . $e->getMessage());
+        }
+    }
+    
     // Method untuk mengeksekusi INSERT, UPDATE, DELETE
     public function execute($sql, $params = []) {
         try {
@@ -68,8 +79,41 @@ class Database {
     public function rollback() {
         return $this->connection->rollback();
     }
+    
+    // Method untuk fetch single row
+    public function fetch($sql, $params = []) {
+        try {
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetch();
+        } catch (PDOException $e) {
+            throw new Exception("Fetch error: " . $e->getMessage());
+        }
+    }
+    
+    // Method untuk fetch all rows
+    public function fetchAll($sql, $params = []) {
+        try {
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            throw new Exception("FetchAll error: " . $e->getMessage());
+        }
+    }
 }
 
 // Membuat instance database global
 $db = new Database();
+
+// Untuk kompatibilitas dengan kode lama yang menggunakan mysqli
+// Buat koneksi mysqli juga
+$conn = mysqli_connect('localhost', 'root', '', 'db_apem');
+
+// Set charset untuk mysqli
+if ($conn) {
+    mysqli_set_charset($conn, 'utf8mb4');
+} else {
+    die("Koneksi MySQLi gagal: " . mysqli_connect_error());
+}
 ?>

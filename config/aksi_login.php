@@ -39,6 +39,7 @@ if (isset($_POST['kirim'])) {
                 if (password_verify($password, $user['password'])) {
                     // Set session untuk masyarakat
                     $_SESSION['user_id'] = $user['nik'];
+                    $_SESSION['nik'] = $user['nik'];
                     $_SESSION['nama'] = $user['nama'];
                     $_SESSION['username'] = $user['username'];
                     $_SESSION['level'] = 'masyarakat';
