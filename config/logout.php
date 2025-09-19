@@ -2,17 +2,10 @@
 session_start();
 
 // Hapus semua session
-$_SESSION = array();
-
-// Hapus session cookie jika ada
-if (isset($_COOKIE[session_name()])) {
-    setcookie(session_name(), '', time()-3600, '/');
-}
-
-// Hancurkan session
+session_unset();
 session_destroy();
 
-// Redirect ke halaman utama
-header("Location: ../index.php");
+// Redirect ke halaman login
+header("Location: index.php?page=login&logout=success");
 exit();
 ?>

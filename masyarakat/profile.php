@@ -12,8 +12,7 @@ if (!isset($_SESSION['login']) || $_SESSION['level'] != 'masyarakat') {
 try {
     // Ambil data user
     $sql = "SELECT * FROM masyarakat WHERE nik = ?";
-    $stmt = $db->query($sql, [$_SESSION['user_id']]);
-    $user = $stmt->fetch();
+    $user = $db->fetch($sql, [$_SESSION['user_id']]);
     
     if (!$user) {
         $_SESSION['error'] = "Data pengguna tidak ditemukan";
@@ -30,8 +29,19 @@ try {
                     MIN(tgl_pengaduan) as first_complaint,
                     MAX(tgl_pengaduan) as last_complaint
                   FROM pengaduan WHERE nik = ?";
-    $stats_stmt = $db->query($stats_sql, [$_SESSION['user_id']]);
-    $stats = $stats_stmt->fetch();
+    $stats = $db->fetch($stats_sql, [$_SESSION['user_id']]);
+    
+    // Set default values if no stats found
+    if (!$stats) {
+        $stats = [
+            'total_pengaduan' => 0,
+            'pending' => 0,
+            'proses' => 0,
+            'selesai' => 0,
+            'first_complaint' => null,
+            'last_complaint' => null
+        ];
+    }
     
 } catch (Exception $e) {
     $_SESSION['error'] = "Terjadi kesalahan saat mengambil data";
@@ -162,6 +172,29 @@ try {
           </div>
         </div>
       </div>
+
+      <!-- Activity Info -->
+      <?php if ($stats['total_pengaduan'] > 0): ?>
+      <div class="card">
+        <div class="card-header"><h6 class="mb-0"><i class="bi bi-activity"></i> Aktivitas Pengaduan</h6></div>
+        <div class="card-body">
+          <div class="row">
+            <?php if ($stats['first_complaint']): ?>
+            <div class="col-md-6">
+              <small class="text-muted">Pengaduan Pertama:</small><br>
+              <strong><?= date('d M Y', strtotime($stats['first_complaint'])); ?></strong>
+            </div>
+            <?php endif; ?>
+            <?php if ($stats['last_complaint']): ?>
+            <div class="col-md-6">
+              <small class="text-muted">Pengaduan Terakhir:</small><br>
+              <strong><?= date('d M Y', strtotime($stats['last_complaint'])); ?></strong>
+            </div>
+            <?php endif; ?>
+          </div>
+        </div>
+      </div>
+      <?php endif; ?>
     </main>
   </div>
 </div>

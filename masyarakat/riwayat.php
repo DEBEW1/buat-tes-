@@ -32,25 +32,24 @@ try {
         $params[] = $status_filter;
     }
     
-    $count_stmt = $db->query($count_sql, $count_params);
-    $total_data = $count_stmt->fetch()['total'];
+    // Get total count using fetch method
+    $count_result = $db->fetch($count_sql, $count_params);
+    $total_data = $count_result['total'];
     $total_pages = ceil($total_data / $limit);
     
-    $sql .= " ORDER BY tgl_pengaduan DESC LIMIT ? OFFSET ?";
-    $params[] = $limit;
-    $params[] = $offset;
+    $sql .= " ORDER BY tgl_pengaduan DESC LIMIT $limit OFFSET $offset";
     
-    $stmt = $db->query($sql, $params);
-    $pengaduan = $stmt->fetchAll();
+    // Get pengaduan data using fetchAll method
+    $pengaduan = $db->fetchAll($sql, $params);
     
+    // Get statistics
     $stats_sql = "SELECT 
                     COUNT(*) as total,
                     SUM(CASE WHEN status = '0' THEN 1 ELSE 0 END) as pending,
                     SUM(CASE WHEN status = 'proses' THEN 1 ELSE 0 END) as proses,
                     SUM(CASE WHEN status = 'selesai' THEN 1 ELSE 0 END) as selesai
                   FROM pengaduan WHERE nik = ?";
-    $stats_stmt = $db->query($stats_sql, [$_SESSION['user_id']]);
-    $stats = $stats_stmt->fetch();
+    $stats = $db->fetch($stats_sql, [$_SESSION['user_id']]);
     
 } catch (Exception $e) {
     $pengaduan = [];

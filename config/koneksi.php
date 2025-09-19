@@ -1,119 +1,80 @@
 <?php
-// config/koneksi.php
-class Database {
-    private $host = 'localhost';
-    private $username = 'root';
-    private $password = '';
-    private $database = 'db_apem';
-    private $connection;
-    
-    public function __construct() {
-        try {
-            $this->connection = new PDO(
-                "mysql:host={$this->host};dbname={$this->database};charset=utf8mb4",
-                $this->username,
-                $this->password,
-                [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES => false
-                ]
-            );
-        } catch (PDOException $e) {
-            die("Koneksi database gagal: " . $e->getMessage());
+// config/koneksi.php - Perbaikan konfigurasi database
+if (!class_exists('Database')) {
+    class Database {
+        private string $host = 'localhost';
+        private string $username = 'root';
+        private string $password = '';
+        private string $database = 'db_apem2';
+        private ?PDO $connection = null;
+
+        public function __construct() {
+            $this->connect();
         }
-    }
-    
-    public function getConnection() {
-        return $this->connection;
-    }
-    
-    // Method untuk mengeksekusi query SELECT
-    public function query($sql, $params = []) {
-        try {
+
+        private function connect(): void {
+            try {
+                $this->connection = new PDO(
+                    "mysql:host={$this->host};dbname={$this->database};charset=utf8mb4",
+                    $this->username,
+                    $this->password,
+                    [
+                        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                        PDO::ATTR_EMULATE_PREPARES   => false
+                    ]
+                );
+            } catch (PDOException $e) {
+                exit("Koneksi database gagal: " . $e->getMessage());
+            }
+        }
+
+        public function fetch(string $sql, array $params = []): ?array {
             $stmt = $this->connection->prepare($sql);
             $stmt->execute($params);
-            return $stmt;
-        } catch (PDOException $e) {
-            throw new Exception("Query error: " . $e->getMessage());
+            return $stmt->fetch() ?: null;
         }
-    }
-    
-    // Method untuk mendapatkan jumlah row dari query
-    public function count($sql, $params = []) {
-        try {
-            $stmt = $this->connection->prepare($sql);
-            $stmt->execute($params);
-            return $stmt->rowCount();
-        } catch (PDOException $e) {
-            throw new Exception("Count error: " . $e->getMessage());
-        }
-    }
-    
-    // Method untuk mengeksekusi INSERT, UPDATE, DELETE
-    public function execute($sql, $params = []) {
-        try {
-            $stmt = $this->connection->prepare($sql);
-            return $stmt->execute($params);
-        } catch (PDOException $e) {
-            throw new Exception("Execute error: " . $e->getMessage());
-        }
-    }
-    
-    // Method untuk mendapatkan ID terakhir yang diinsert
-    public function lastInsertId() {
-        return $this->connection->lastInsertId();
-    }
-    
-    // Method untuk memulai transaksi
-    public function beginTransaction() {
-        return $this->connection->beginTransaction();
-    }
-    
-    // Method untuk commit transaksi
-    public function commit() {
-        return $this->connection->commit();
-    }
-    
-    // Method untuk rollback transaksi
-    public function rollback() {
-        return $this->connection->rollback();
-    }
-    
-    // Method untuk fetch single row
-    public function fetch($sql, $params = []) {
-        try {
-            $stmt = $this->connection->prepare($sql);
-            $stmt->execute($params);
-            return $stmt->fetch();
-        } catch (PDOException $e) {
-            throw new Exception("Fetch error: " . $e->getMessage());
-        }
-    }
-    
-    // Method untuk fetch all rows
-    public function fetchAll($sql, $params = []) {
-        try {
+
+        public function fetchAll(string $sql, array $params = []): array {
             $stmt = $this->connection->prepare($sql);
             $stmt->execute($params);
             return $stmt->fetchAll();
-        } catch (PDOException $e) {
-            throw new Exception("FetchAll error: " . $e->getMessage());
+        }
+
+        public function execute(string $sql, array $params = []): bool {
+            $stmt = $this->connection->prepare($sql);
+            return $stmt->execute($params);
+        }
+
+        public function getLatest(string $table, string $timeColumn = "tgl_pengaduan", int $limit = 5): array {
+            $sql = "SELECT * FROM {$table} ORDER BY {$timeColumn} DESC LIMIT :limit";
+            $stmt = $this->connection->prepare($sql);
+            $stmt->bindValue(":limit", $limit, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll();
         }
     }
 }
 
-// Membuat instance database global
-$db = new Database();
+// Koneksi MySQLi untuk backward compatibility
+if (!isset($conn)) {
+    $host = 'localhost';
+    $username = 'root';
+    $password = '';
+    $database = 'db_apem2';
 
-// Untuk kompatibilitas dengan kode lama yang menggunakan mysqli
-// Buat koneksi mysqli juga
-$conn = mysqli_connect('localhost', 'root', '', 'db_apem');
+    $conn = new mysqli($host, $username, $password, $database);
 
-// Set charset untuk mysqli
-if ($conn) {
-    mysqli_set_charset($conn, 'utf8mb4');
-} else {
-    die("Koneksi MySQLi gagal: " . mysqli_connect_error());
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Set charset
+    $conn->set_charset("utf8mb4");
+}
+
+// Instance PDO global
+if (!isset($db)) {
+    $db = new Database();
 }
 ?>

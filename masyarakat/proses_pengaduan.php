@@ -3,9 +3,6 @@
 session_start();
 require_once '../config/koneksi.php';
 
-// Ambil koneksi PDO
-$pdo = $db->getConnection();
-
 // Cek login
 if (!isset($_SESSION['login']) || $_SESSION['level'] != 'masyarakat') {
     header("Location: ../index.php?page=login");
@@ -69,12 +66,19 @@ if (isset($_POST['submit'])) {
 
     // Simpan ke database
     try {
-        $stmt = $pdo->prepare("INSERT INTO pengaduan 
+        $sql = "INSERT INTO pengaduan 
             (tgl_pengaduan, nik, judul_pengaduan, isi_laporan, foto, status) 
-            VALUES (?, ?, ?, ?, ?, '0')");
-        $stmt->execute([$tgl_pengaduan, $nik, $judul, $isi, $foto]);
-
-        $_SESSION['success'] = "Pengaduan berhasil dikirim.";
+            VALUES (?, ?, ?, ?, ?, '0')";
+        $params = [$tgl_pengaduan, $nik, $judul, $isi, $foto];
+        
+        $result = $db->execute($sql, $params);
+        
+        if ($result) {
+            $_SESSION['success'] = "Pengaduan berhasil dikirim.";
+        } else {
+            $_SESSION['error'] = "Gagal menyimpan pengaduan.";
+        }
+        
         header("Location: pengaduan.php");
         exit();
     } catch (PDOException $e) {
@@ -87,3 +91,4 @@ if (isset($_POST['submit'])) {
     header("Location: pengaduan.php");
     exit();
 }
+?>
