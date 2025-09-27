@@ -117,7 +117,7 @@ try {
           <li class="nav-item"><a class="nav-link" href="pengaduan.php"><i class="bi bi-file-earmark-text"></i> Buat Pengaduan</a></li>
           <li class="nav-item"><a class="nav-link" href="riwayat.php"><i class="bi bi-clock-history"></i> Riwayat Pengaduan</a></li>
           <li class="nav-item"><a class="nav-link active" href="profile.php"><i class="bi bi-person"></i> Profil</a></li>
-          <li class="nav-item mt-3"><a class="nav-link text-warning" href="../config/logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+          <li class="nav-item mt-3"><a class="nav-link text-warning" href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
         </ul>
       </div>
     </nav>
@@ -135,25 +135,51 @@ try {
         </div>
       </div>
 
+      <!-- Alert Messages -->
+      <?php if(isset($_SESSION['success'])): ?>
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <?php 
+              echo $_SESSION['success'];
+              unset($_SESSION['success']);
+              ?>
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+      <?php endif; ?>
+      
+      <?php if(isset($_SESSION['error'])): ?>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <?php 
+              echo $_SESSION['error'];
+              unset($_SESSION['error']);
+              ?>
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+      <?php endif; ?>
+
       <!-- Profile Card -->
       <div class="card mb-4">
-        <div class="card-header"><h5 class="mb-0">Data Akun</h5></div>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-person-circle"></i> Data Akun</h5>
+            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                <i class="bi bi-key"></i> Ganti Password
+            </button>
+        </div>
         <div class="card-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="form-label">NIK</label>
+              <label class="form-label"><strong>NIK</strong></label>
               <input type="text" class="form-control" value="<?= htmlspecialchars($user['nik']); ?>" readonly>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Nama</label>
+              <label class="form-label"><strong>Nama Lengkap</strong></label>
               <input type="text" class="form-control" value="<?= htmlspecialchars($user['nama']); ?>" readonly>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Username</label>
+              <label class="form-label"><strong>Username</strong></label>
               <input type="text" class="form-control" value="<?= htmlspecialchars($user['username']); ?>" readonly>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Telepon</label>
+              <label class="form-label"><strong>Nomor Telepon</strong></label>
               <input type="text" class="form-control" value="<?= htmlspecialchars($user['telp']); ?>" readonly>
             </div>
           </div>
@@ -165,37 +191,120 @@ try {
         <div class="card-header"><h6 class="mb-0"><i class="bi bi-bar-chart"></i> Statistik Pengaduan</h6></div>
         <div class="card-body">
           <div class="row text-center">
-            <div class="col"><strong><?= $stats['total_pengaduan']; ?></strong><br><small>Total</small></div>
-            <div class="col"><strong><?= $stats['pending']; ?></strong><br><small>Pending</small></div>
-            <div class="col"><strong><?= $stats['proses']; ?></strong><br><small>Proses</small></div>
-            <div class="col"><strong><?= $stats['selesai']; ?></strong><br><small>Selesai</small></div>
+            <div class="col-6 col-md-3 mb-3">
+                <div class="p-3 bg-primary text-white rounded">
+                    <h3 class="mb-1"><?= $stats['total_pengaduan']; ?></h3>
+                    <small>Total Pengaduan</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 mb-3">
+                <div class="p-3 bg-warning text-dark rounded">
+                    <h3 class="mb-1"><?= $stats['pending']; ?></h3>
+                    <small>Pending</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 mb-3">
+                <div class="p-3 bg-info text-white rounded">
+                    <h3 class="mb-1"><?= $stats['proses']; ?></h3>
+                    <small>Diproses</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 mb-3">
+                <div class="p-3 bg-success text-white rounded">
+                    <h3 class="mb-1"><?= $stats['selesai']; ?></h3>
+                    <small>Selesai</small>
+                </div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Activity Info -->
       <?php if ($stats['total_pengaduan'] > 0): ?>
-      <div class="card">
+      <div class="card mb-4">
         <div class="card-header"><h6 class="mb-0"><i class="bi bi-activity"></i> Aktivitas Pengaduan</h6></div>
         <div class="card-body">
           <div class="row">
             <?php if ($stats['first_complaint']): ?>
-            <div class="col-md-6">
-              <small class="text-muted">Pengaduan Pertama:</small><br>
-              <strong><?= date('d M Y', strtotime($stats['first_complaint'])); ?></strong>
+            <div class="col-md-6 mb-3">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-calendar-plus text-success me-2"></i>
+                <div>
+                    <small class="text-muted">Pengaduan Pertama:</small><br>
+                    <strong><?= date('d M Y', strtotime($stats['first_complaint'])); ?></strong>
+                </div>
+              </div>
             </div>
             <?php endif; ?>
             <?php if ($stats['last_complaint']): ?>
-            <div class="col-md-6">
-              <small class="text-muted">Pengaduan Terakhir:</small><br>
-              <strong><?= date('d M Y', strtotime($stats['last_complaint'])); ?></strong>
+            <div class="col-md-6 mb-3">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-calendar-check text-info me-2"></i>
+                <div>
+                    <small class="text-muted">Pengaduan Terakhir:</small><br>
+                    <strong><?= date('d M Y', strtotime($stats['last_complaint'])); ?></strong>
+                </div>
+              </div>
             </div>
             <?php endif; ?>
           </div>
         </div>
       </div>
       <?php endif; ?>
+
+      <!-- Quick Actions -->
+      <div class="card">
+        <div class="card-header"><h6 class="mb-0"><i class="bi bi-lightning"></i> Aksi Cepat</h6></div>
+        <div class="card-body">
+          <div class="d-grid gap-2 d-md-flex">
+            <a href="pengaduan.php" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Buat Pengaduan Baru
+            </a>
+            <a href="riwayat.php" class="btn btn-outline-secondary">
+                <i class="bi bi-clock-history"></i> Lihat Riwayat
+            </a>
+            <a href="dashboard.php" class="btn btn-outline-info">
+                <i class="bi bi-speedometer2"></i> Ke Dashboard
+            </a>
+          </div>
+        </div>
+      </div>
     </main>
+  </div>
+</div>
+
+<!-- Modal Change Password -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-key"></i> Ganti Password</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form action="change_password.php" method="POST" id="changePasswordForm">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="current_password" class="form-label">Password Saat Ini</label>
+            <input type="password" class="form-control" id="current_password" name="current_password" required>
+          </div>
+          <div class="mb-3">
+            <label for="new_password" class="form-label">Password Baru</label>
+            <input type="password" class="form-control" id="new_password" name="new_password" required minlength="6">
+            <div class="form-text">Minimal 6 karakter</div>
+          </div>
+          <div class="mb-3">
+            <label for="confirm_password" class="form-label">Konfirmasi Password Baru</label>
+            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle"></i> Ganti Password
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -217,6 +326,26 @@ if(overlay){
     overlay.classList.remove('show');
   });
 }
+
+// Password validation
+document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+    const newPassword = document.getElementById('new_password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    
+    if (newPassword !== confirmPassword) {
+        e.preventDefault();
+        alert('Konfirmasi password tidak cocok!');
+        return false;
+    }
+    
+    if (newPassword.length < 6) {
+        e.preventDefault();
+        alert('Password baru minimal 6 karakter!');
+        return false;
+    }
+    
+    return confirm('Apakah Anda yakin ingin mengganti password?');
+});
 </script>
 </body>
 </html>

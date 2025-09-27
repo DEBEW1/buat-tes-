@@ -296,7 +296,7 @@ if (!isset($_SESSION['login']) || $_SESSION['level'] != 'masyarakat') {
                             </a>
                         </li>
                         <li class="nav-item mt-3">
-                            <a class="nav-link text-warning" href="../config/logout.php">
+                            <a class="nav-link text-warning" href="logout.php">
                                 <i class="bi bi-box-arrow-right"></i> Logout
                             </a>
                         </li>

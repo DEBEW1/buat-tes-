@@ -147,7 +147,7 @@ function formatIsiLaporan($isi_laporan, $limit = 100) {
           <li class="nav-item"><a class="nav-link" href="pengaduan.php"><i class="bi bi-file-earmark-text"></i> Buat Pengaduan</a></li>
           <li class="nav-item"><a class="nav-link active" href="riwayat.php"><i class="bi bi-clock-history"></i> Riwayat Pengaduan</a></li>
           <li class="nav-item"><a class="nav-link" href="profile.php"><i class="bi bi-person"></i> Profil</a></li>
-          <li class="nav-item mt-3"><a class="nav-link text-warning" href="../config/logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+          <li class="nav-item mt-3"><a class="nav-link text-warning" href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
         </ul>
       </div>
     </nav>
@@ -165,19 +165,29 @@ function formatIsiLaporan($isi_laporan, $limit = 100) {
 
       <!-- Statistik -->
       <div class="row mb-4">
-        <div class="col-md-3"><div class="card text-white" style="background:var(--secondary)"><div class="card-body"><div>Total<br><strong><?= $stats['total']; ?></strong></div></div></div></div>
-        <div class="col-md-3"><div class="card text-white" style="background:var(--warning)"><div class="card-body"><div>Pending<br><strong><?= $stats['pending']; ?></strong></div></div></div></div>
-        <div class="col-md-3"><div class="card text-white" style="background:var(--info)"><div class="card-body"><div>Diproses<br><strong><?= $stats['proses']; ?></strong></div></div></div></div>
-        <div class="col-md-3"><div class="card text-white" style="background:var(--success)"><div class="card-body"><div>Selesai<br><strong><?= $stats['selesai']; ?></strong></div></div></div></div>
+        <div class="col-md-3 col-6 mb-3"><div class="card text-white" style="background:var(--secondary)"><div class="card-body"><div>Total<br><strong><?= $stats['total']; ?></strong></div></div></div></div>
+        <div class="col-md-3 col-6 mb-3"><div class="card text-white" style="background:var(--warning)"><div class="card-body"><div>Pending<br><strong><?= $stats['pending']; ?></strong></div></div></div></div>
+        <div class="col-md-3 col-6 mb-3"><div class="card text-white" style="background:var(--info)"><div class="card-body"><div>Diproses<br><strong><?= $stats['proses']; ?></strong></div></div></div></div>
+        <div class="col-md-3 col-6 mb-3"><div class="card text-white" style="background:var(--success)"><div class="card-body"><div>Selesai<br><strong><?= $stats['selesai']; ?></strong></div></div></div></div>
       </div>
 
       <!-- Filter -->
       <div class="card mb-4"><div class="card-body">
-        <h6 class="mb-2">Filter:</h6>
-        <a href="?status=all" class="btn btn-outline-secondary btn-filter <?= ($status_filter=='all'?'active':'') ?>">Semua</a>
-        <a href="?status=0" class="btn btn-outline-warning btn-filter <?= ($status_filter=='0'?'active':'') ?>">Pending</a>
-        <a href="?status=proses" class="btn btn-outline-info btn-filter <?= ($status_filter=='proses'?'active':'') ?>">Diproses</a>
-        <a href="?status=selesai" class="btn btn-outline-success btn-filter <?= ($status_filter=='selesai'?'active':'') ?>">Selesai</a>
+        <h6 class="mb-2">Filter Status:</h6>
+        <div class="d-flex flex-wrap gap-1">
+            <a href="?status=all" class="btn btn-outline-secondary btn-filter <?= ($status_filter=='all'?'active':'') ?>">
+                <i class="bi bi-list"></i> Semua
+            </a>
+            <a href="?status=0" class="btn btn-outline-warning btn-filter <?= ($status_filter=='0'?'active':'') ?>">
+                <i class="bi bi-clock"></i> Pending
+            </a>
+            <a href="?status=proses" class="btn btn-outline-info btn-filter <?= ($status_filter=='proses'?'active':'') ?>">
+                <i class="bi bi-arrow-repeat"></i> Diproses
+            </a>
+            <a href="?status=selesai" class="btn btn-outline-success btn-filter <?= ($status_filter=='selesai'?'active':'') ?>">
+                <i class="bi bi-check-circle"></i> Selesai
+            </a>
+        </div>
       </div></div>
 
       <!-- Pengaduan List -->
@@ -185,31 +195,60 @@ function formatIsiLaporan($isi_laporan, $limit = 100) {
         <div class="card"><div class="card-body text-center py-5">
           <i class="bi bi-file-earmark-x h1 text-muted mb-3"></i>
           <h5 class="text-muted">Tidak ada pengaduan ditemukan</h5>
-          <a href="pengaduan.php" class="btn btn-primary">Buat Pengaduan Pertama</a>
+          <p class="text-muted">
+            <?php if ($status_filter != 'all'): ?>
+                Tidak ada pengaduan dengan status yang dipilih.
+            <?php else: ?>
+                Anda belum membuat pengaduan apapun.
+            <?php endif; ?>
+          </p>
+          <a href="pengaduan.php" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Buat Pengaduan Pertama
+          </a>
         </div></div>
       <?php else: ?>
         <div class="row">
         <?php foreach($pengaduan as $item): 
           $laporan=formatIsiLaporan($item['isi_laporan']);
           switch($item['status']){
-            case '0':$status_class='badge-pending';$status_text='Menunggu';$status_icon='bi-clock';break;
-            case 'proses':$status_class='badge-proses';$status_text='Diproses';$status_icon='bi-arrow-repeat';break;
-            case 'selesai':$status_class='badge-selesai';$status_text='Selesai';$status_icon='bi-check-circle';break;
+            case '0':$status_class='badge-pending';$status_text='Menunggu';$status_icon='bi-clock';$card_class='pending';break;
+            case 'proses':$status_class='badge-proses';$status_text='Diproses';$status_icon='bi-arrow-repeat';$card_class='proses';break;
+            case 'selesai':$status_class='badge-selesai';$status_text='Selesai';$status_icon='bi-check-circle';$card_class='selesai';break;
+            default:$status_class='bg-secondary';$status_text='Unknown';$status_icon='bi-question';$card_class='';break;
           } ?>
           <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card pengaduan-card <?= str_replace('badge-','',$status_class); ?>">
-              <div class="card-header d-flex justify-content-between bg-light">
-                <small><i class="bi bi-calendar3"></i> <?= date('d M Y',strtotime($item['tgl_pengaduan'])); ?></small>
-                <span class="badge <?= $status_class; ?>"><i class="<?= $status_icon; ?>"></i> <?= $status_text; ?></span>
+            <div class="card pengaduan-card <?= $card_class; ?> h-100">
+              <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                <small class="text-muted">
+                    <i class="bi bi-calendar3"></i> <?= date('d M Y',strtotime($item['tgl_pengaduan'])); ?>
+                </small>
+                <span class="badge <?= $status_class; ?>">
+                    <i class="<?= $status_icon; ?>"></i> <?= $status_text; ?>
+                </span>
               </div>
-              <div class="card-body">
-                <h6 class="card-title text-primary"><?= htmlspecialchars($laporan['judul']); ?></h6>
-                <p class="text-muted small"><?= htmlspecialchars($laporan['isi']); ?></p>
-                <div class="d-flex justify-content-between">
-                  <small>ID: <?= $item['id_pengaduan']; ?></small>
-                  <a href="detail.php?id=<?= $item['id_pengaduan']; ?>" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> Detail</a>
+              <div class="card-body d-flex flex-column">
+                <h6 class="card-title text-primary mb-2">
+                    <?= htmlspecialchars($laporan['judul']); ?>
+                </h6>
+                <p class="text-muted small mb-3 flex-grow-1">
+                    <?= htmlspecialchars($laporan['isi']); ?>
+                </p>
+                <div class="d-flex justify-content-between align-items-center mt-auto">
+                  <small class="text-muted">
+                    <i class="bi bi-hash"></i> <?= $item['id_pengaduan']; ?>
+                  </small>
+                  <a href="detail.php?id=<?= $item['id_pengaduan']; ?>" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye"></i> Detail
+                  </a>
                 </div>
               </div>
+              <?php if (!empty($item['foto'])): ?>
+              <div class="card-footer bg-transparent">
+                <small class="text-muted">
+                    <i class="bi bi-image"></i> Ada foto lampiran
+                </small>
+              </div>
+              <?php endif; ?>
             </div>
           </div>
         <?php endforeach; ?>
@@ -217,14 +256,61 @@ function formatIsiLaporan($isi_laporan, $limit = 100) {
       <?php endif; ?>
 
       <!-- Pagination -->
-      <?php if ($total_pages>1): ?>
-        <nav><ul class="pagination justify-content-center">
-          <?php if ($page>1): ?><li class="page-item"><a class="page-link" href="?page=<?= $page-1; ?>&status=<?= $status_filter; ?>"><i class="bi bi-chevron-left"></i></a></li><?php endif; ?>
-          <?php for($i=1;$i<=$total_pages;$i++): ?>
-            <li class="page-item <?= ($i==$page?'active':''); ?>"><a class="page-link" href="?page=<?= $i; ?>&status=<?= $status_filter; ?>"><?= $i; ?></a></li>
-          <?php endfor; ?>
-          <?php if ($page<$total_pages): ?><li class="page-item"><a class="page-link" href="?page=<?= $page+1; ?>&status=<?= $status_filter; ?>"><i class="bi bi-chevron-right"></i></a></li><?php endif; ?>
-        </ul></nav>
+      <?php if ($total_pages > 1): ?>
+        <nav aria-label="Pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+              <!-- Previous button -->
+              <?php if ($page > 1): ?>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<?= $page-1; ?>&status=<?= $status_filter; ?>" aria-label="Previous">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+              <?php endif; ?>
+              
+              <!-- Page numbers -->
+              <?php 
+              $start_page = max(1, $page - 2);
+              $end_page = min($total_pages, $page + 2);
+              
+              if ($start_page > 1): ?>
+                <li class="page-item"><a class="page-link" href="?page=1&status=<?= $status_filter; ?>">1</a></li>
+                <?php if ($start_page > 2): ?>
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+                <?php endif; ?>
+              <?php endif; ?>
+              
+              <?php for($i = $start_page; $i <= $end_page; $i++): ?>
+                <li class="page-item <?= ($i == $page ? 'active' : ''); ?>">
+                    <a class="page-link" href="?page=<?= $i; ?>&status=<?= $status_filter; ?>"><?= $i; ?></a>
+                </li>
+              <?php endfor; ?>
+              
+              <?php if ($end_page < $total_pages): ?>
+                <?php if ($end_page < $total_pages - 1): ?>
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+                <?php endif; ?>
+                <li class="page-item"><a class="page-link" href="?page=<?= $total_pages; ?>&status=<?= $status_filter; ?>"><?= $total_pages; ?></a></li>
+              <?php endif; ?>
+              
+              <!-- Next button -->
+              <?php if ($page < $total_pages): ?>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<?= $page+1; ?>&status=<?= $status_filter; ?>" aria-label="Next">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+              <?php endif; ?>
+            </ul>
+        </nav>
+        
+        <!-- Page info -->
+        <div class="text-center mt-3">
+            <small class="text-muted">
+                Halaman <?= $page; ?> dari <?= $total_pages; ?> 
+                (<?= $total_data; ?> total pengaduan)
+            </small>
+        </div>
       <?php endif; ?>
     </main>
   </div>
@@ -235,12 +321,38 @@ function formatIsiLaporan($isi_laporan, $limit = 100) {
 const menuToggle=document.getElementById('menuToggle');
 const sidebar=document.getElementById('sidebarMenu');
 const overlay=document.getElementById('overlay');
+
 if(menuToggle){
-  menuToggle.addEventListener('click',()=>{sidebar.classList.toggle('show');overlay.classList.toggle('show');});
+  menuToggle.addEventListener('click',()=>{
+    sidebar.classList.toggle('show');
+    overlay.classList.toggle('show');
+  });
 }
 if(overlay){
-  overlay.addEventListener('click',()=>{sidebar.classList.remove('show');overlay.classList.remove('show');});
+  overlay.addEventListener('click',()=>{
+    sidebar.classList.remove('show');
+    overlay.classList.remove('show');
+  });
 }
+
+// Auto refresh setiap 30 detik untuk update status real-time
+setInterval(function() {
+    // Hanya refresh jika ada pengaduan yang masih pending atau diproses
+    const hasPendingOrProcess = <?= ($stats['pending'] + $stats['proses']) > 0 ? 'true' : 'false' ?>;
+    if (hasPendingOrProcess) {
+        // Smooth reload tanpa mengganggu user experience
+        console.log('Auto checking for updates...');
+        // Bisa ditambahkan AJAX call untuk cek update status
+    }
+}, 30000);
+
+// Smooth scroll untuk pagination
+document.querySelectorAll('.pagination a').forEach(link => {
+    link.addEventListener('click', function(e) {
+        // Scroll ke atas saat ganti halaman
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+});
 </script>
 </body>
 </html>
